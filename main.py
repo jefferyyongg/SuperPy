@@ -1,152 +1,120 @@
 # Imports
-import datetime
-import csv
 import argparse
-# Importing pandas for better overview
-import pandas as pd
+import csv
+import datetime
+
+from bought import bought
+from sold import sold
+from inventory import inv
+from set_date import set_date
+from revenue import rev
+from profit import prof
+from graph import graph
+
+# DONE
+# PARSER FUNCTIONALITY
+# BUY FUNCTIONALITY
+# SELL FUNCTIONALITY
+# SET_DATE FUNCTIONALITY
+# INVENTORY FUNCTIONALITY
+# FINISH REVENUE & REPORT FUNCTIONALITY
+# ALL FUNCTIONS HAVE TO WORK WITH FILTERING WITH DATETIME BY MONTH
+# ADD 2 ADDITIONAL FEATURES (MATPLOTLIB, Pandas)
+
+# STILL TO DO:
+
 
 # Do not change these lines.
 __winc_id__ = "a2bc36ea784242e4989deb157d527ba0"
 __human_name__ = "superpy"
 
-# Top commandline
+# Your code below this line.
+
 parser = argparse.ArgumentParser()
-parser.add_argument("--advancetime", type=int,
-                    help="advance time by x days", default=0)
+subparser = parser.add_subparsers(dest="parser")
 
-subparser = parser.add_subparsers(dest="command")
+advancetime = parser.add_argument("-a", "--advancetime", type=int,
+                                  help="advances time by x amount of days (enter 0 to reset date)")
 
-# Sub commandline to add product
+inventory = subparser.add_parser(
+    "inventory", help="-t/--today for today's date or -y/--yesterday for yesterday's date")
+inventory.add_argument("-t", "--today", action="store_true", required=False)
+inventory.add_argument("-y", "--yesterday",
+                       action="store_true", required=False)
+
+# Sub commandline to buy product
 buy = subparser.add_parser("buy")
-buy.add_argument("--name", type=str, required=True, help="Name of Product")
-buy.add_argument("--price", type=float, required=True, help="Price of Product")
-buy.add_argument("--exp", type=str, required=True, help="Expiration Date")
+buy.add_argument("-n", "--name", required="true",
+                 type=str, help="Name of Product")
+buy.add_argument("-p", "--price", required="true",
+                 type=float, help="Price of Product")
+buy.add_argument("-e", "--exp", required="true",
+                 type=str, help="Expiration Date")
 
 # Sub commandline to sell product
 sell = subparser.add_parser("sell")
-sell.add_argument("--name", type=str, required=True, help="Name of Product")
-sell.add_argument("--sellprice", type=str,
-                  required=True, help="Product Sell Price")
+sell.add_argument("-n", "--name", required="true",
+                  type=str, help="Name of Product")
+sell.add_argument("-s", "--sellprice", required="true",
+                  type=str, help="Product Sell Price")
 
-# Sub commandline to report
-report = subparser.add_parser("report")
-report.add_argument("--inventory",
-                    action="store_true", required=True, help="Show Inventory")
-report.add_argument("--now", action="store_true", help="Inventory now")
-report.add_argument("--yesterday", action="store_true",
-                    help="Inventory yesterday")
+revenue = subparser.add_parser(
+    "revenue", help="-d/--date to filter by date (yyyy-mm) or -t/--today for today's date or -s/--stats for graph")
+revenue.add_argument("-d", "--date", type=str,
+                     help="input date as following (yyyy-mm)")
+revenue.add_argument("-t", "--today", action="store_true", required=False)
+revenue.add_argument("-y", "--yesterday", action="store_true", required=False)
+revenue.add_argument("-s", "--stats", type=str,
+                     required=False, help="show graph for following dates (yyyy-mm)")
+
+profit = subparser.add_parser(
+    "profit", help="-d/--date to filter by date (yyyy-mm) or -y/--yesterday for yesterday's date")
+profit.add_argument("-d", "--date", type=str,
+                    help="input date as following (yyyy-mm)")
+profit.add_argument("-t", "--today", action="store_true", required=False)
+profit.add_argument("-y", "--yesterday", action="store_true", required=False)
 
 args = parser.parse_args()
 
-# TO DO: STRUCTURE TIME OBJECT IN SEPERATE CSV FILE
 
-# AttributeError: 'str' object has no attribute 'strftime'
+def main():
+    if args.advancetime or args.advancetime == 0:
+        set_date(args.advancetime)
 
-# Advance date
+    if args.parser == "buy":
+        bought(args)
+    elif args.parser == "sell":
+        sold(args)
 
+    if args.parser == "inventory" and args.today:
+        set_date("today")
+        inv()
+    elif args.parser == "inventory" and args.yesterday:
+        set_date("yesterday")
+        inv()
+    elif args.parser == "inventory":
+        inv()
 
-def set_date(args):
-    date = datetime.date.today() + datetime.timedelta(days=args)
-    date = datetime.datetime.strftime(date, '%m-%d-%y')
+    if args.parser == "revenue" and args.date:
+        rev(args.date)
+    elif args.parser == "revenue" and args.today:
+        rev(str(datetime.datetime.now().date()))
+    elif args.parser == "revenue" and args.yesterday:
+        rev(str((datetime.datetime.now() - datetime.timedelta(days=1)).date()))
+    elif args.parser == "revenue" and args.stats:
+        graph(args.stats)
+    elif args.parser == "revenue":
+        rev(str(datetime.datetime.now().date()))
 
-    with open("datetime.csv", "w", newline="") as write_file:
-        writer = csv.writer(write_file)
-        writer.writerow(
-            [date])
-    return date
-
-# Get current date from csv file
-
-
-def get_date():
-    with open("datetime.csv", "r") as read_file:
-        reader = list(csv.reader(read_file))
-        return datetime.datetime.strptime(reader[0][0], '%m-%d-%y').date()
-
-
-tday = get_date().strftime(
-    '%m-%d-%y') if args.advancetime == 0 else set_date(args.advancetime)
-
-# Show inventory function
-
-
-def show_inventory(args):
-    df = pd.read_csv("bought.csv")
-
-    if isinstance(args, datetime.date):
-        args = args.strftime('%m-%d-%y')
-
-    print(df[df.buy_date <= args])
-
-# Buy item function(data_list = empty list for checking duplicates)
+    if args.parser == "profit" and args.date:
+        prof(args.date)
+    elif args.parser == "profit" and args.today:
+        prof(str(datetime.datetime.now().date()))
+    elif args.parser == "profit" and args.yesterday:
+        prof(str((datetime.datetime.now() - datetime.timedelta(days=1)).date()))
+    elif args.parser == "profit":
+        prof(str(datetime.datetime.now().date()))
 
 
-def buy_item(name, price, exp_date, data_list=[]):
-
-    with open("bought.csv", "r") as read_file:
-        # Convert to list for easier accessibility
-        data = list(csv.reader(read_file))
-
-        # Appending bought.csv names to empty list
-        for line in data[1:]:
-            data_list.append(line[1])
-
-        # Appending new item to list if name not in list else adding +1 to existing items amount
-        if name not in data_list:
-            data.append([len(data), name, 1, price, exp_date, tday])
-        else:
-            data[data_list.index(
-                name) + 1][2] = int(data[data_list.index(name) + 1][2]) + 1
-
-    # Rewriting old file with new updated content
-    with open("bought.csv", "w", newline="") as write_file:
-        writer = csv.writer(write_file)
-        writer.writerows(data)
-
-
-# Sell item function
-def sell_item(name, sellprice, data_list=[]):
-
-    with open("bought.csv", "r") as read_file:
-
-        # Convert to list for easier accessibility
-        data = list(csv.reader(read_file))
-
-        # Appending bought.csv names to empty list
-        for line in data[0:]:
-            data_list.append(line[1])
-
-        with open("sold.csv", "r") as read_sold:
-            sold_data = list(csv.reader(read_sold))
-
-            # if name is in bought.csv and amount is higher then 1, remove 1 from amount and add line to sold.csv
-            for line in data[1:]:
-                if line[1] == name and int(line[2]) > 1:
-                    data[data_list.index(
-                        name)][2] = int(data[data_list.index(name)][2]) - 1
-
-                    sold_data.append([len(sold_data), name, sellprice, tday])
-                # else if name is in bought.csv and amount is equal to 1 remove line from bought.csv and add line to sold.csv
-                elif line[1] == name and int(line[2]) == 1:
-                    data.pop(int(line[0]))
-
-                    sold_data.append([len(sold_data), name, sellprice, tday])
-
-            # rewrite updated list to csv files
-            with open("bought.csv", "w", newline="") as write_file:
-                bought_writer = csv.writer(write_file)
-                bought_writer.writerows(data)
-
-            with open("sold.csv", "w", newline="") as write_sold:
-                writer = csv.writer(write_sold)
-                writer.writerows(sold_data)
-
-
-if args.command == "buy":
-    buy_item(args.name, args.price, args.exp)
-elif args.command == "sell":
-    sell_item(args.name, args.sellprice)
-elif args.command == "report" and args.inventory and args.now:
-    show_inventory(tday)
-elif args.command == "report" and args.inventory and args.yesterday:
-    show_inventory(get_date() - datetime.timedelta(days=1))
+if __name__ == "__main__":
+    main()
