@@ -10,19 +10,25 @@ from set_date import set_date
 from revenue import rev
 from profit import prof
 from graph import graph
+from export import export
 
-# DONE
-# PARSER FUNCTIONALITY
-# BUY FUNCTIONALITY
-# SELL FUNCTIONALITY
-# SET_DATE FUNCTIONALITY
-# INVENTORY FUNCTIONALITY
-# FINISH REVENUE & REPORT FUNCTIONALITY
-# ALL FUNCTIONS HAVE TO WORK WITH FILTERING WITH DATETIME BY MONTH
-# ADD 2 ADDITIONAL FEATURES (MATPLOTLIB, Pandas)
+# DONE 📝
+# PARSER FUNCTIONALITY ✔️
+# BUY FUNCTIONALITY ✔️
+# SELL FUNCTIONALITY ✔️
+# SET_DATE FUNCTIONALITY ✔️
+# INVENTORY FUNCTIONALITY ✔️
+# FINISH REVENUE & REPORT FUNCTIONALITY ✔️
+# ALL FUNCTIONS HAVE TO WORK WITH FILTERING WITH DATETIME BY MONTH ✔️
+# ADD ADDITIONAL FEATURES (MATPLOTLIB) ✔️ ONLY USED WITH REVENUE FUNCTION❗❗❗
 
-# STILL TO DO:
-
+# DAVID VIMEO FEEDBACK TODOS 📝
+# TODAY/YESTERDAY NOT WORKING WITH PROFIT AND REV ✔️
+# DISPLAY DATECHANGE WHEN TIME ADVANCED ✔️
+# BUYING/SELLING ITEMS RESETS DATE.CSV TO TODAYS DATE ✔️
+# BUYING AND SELLING ITEMS ADD WRONG DATE TO BOUGHT/SOLD.CSV ✔️
+# ADD EXPORT ALL INVENTORY ITEMS THAT HAVE EXPIRED ✔️
+# ADD 1 MORE ADDITIONAL FEATURE (PRETTYTABLE) ✔️ ONLY USED WITH DEFAULT INVENTORY FUNCTION❗❗❗
 
 # Do not change these lines.
 __winc_id__ = "a2bc36ea784242e4989deb157d527ba0"
@@ -37,7 +43,8 @@ advancetime = parser.add_argument("-a", "--advancetime", type=int,
                                   help="advances time by x amount of days (enter 0 to reset date)")
 
 inventory = subparser.add_parser(
-    "inventory", help="-t/--today for today's date or -y/--yesterday for yesterday's date")
+    "inventory", help="-t/--today for today's date, -y/--yesterday for yesterday's date")
+inventory.add_argument("-e", "--expired", action="store_true", required=False)
 inventory.add_argument("-t", "--today", action="store_true", required=False)
 inventory.add_argument("-y", "--yesterday",
                        action="store_true", required=False)
@@ -59,16 +66,16 @@ sell.add_argument("-s", "--sellprice", required="true",
                   type=str, help="Product Sell Price")
 
 revenue = subparser.add_parser(
-    "revenue", help="-d/--date to filter by date (yyyy-mm) or -t/--today for today's date or -s/--stats for graph")
+    "revenue", help="-d/--date to filter by date (yyyy-mm-dd) or (yyyy-mm) for monthly revenue, -t/--today for today's date, -s/--stats for graph")
 revenue.add_argument("-d", "--date", type=str,
                      help="input date as following (yyyy-mm)")
 revenue.add_argument("-t", "--today", action="store_true", required=False)
 revenue.add_argument("-y", "--yesterday", action="store_true", required=False)
 revenue.add_argument("-s", "--stats", type=str,
-                     required=False, help="show graph for following dates (yyyy-mm)")
+                     required=False, help="show graph for following months (yyyy-mm)")
 
 profit = subparser.add_parser(
-    "profit", help="-d/--date to filter by date (yyyy-mm) or -y/--yesterday for yesterday's date")
+    "profit", help="-d/--date to filter by date (yyyy-mm-dd) or (yyyy-mm) for monthly profit, -y/--yesterday for yesterday's date")
 profit.add_argument("-d", "--date", type=str,
                     help="input date as following (yyyy-mm)")
 profit.add_argument("-t", "--today", action="store_true", required=False)
@@ -92,6 +99,8 @@ def main():
     elif args.parser == "inventory" and args.yesterday:
         set_date("yesterday")
         inv()
+    elif args.parser == "inventory" and args.expired:
+        export()
     elif args.parser == "inventory":
         inv()
 

@@ -1,5 +1,6 @@
 import csv
 import datetime
+import pandas as pd
 
 
 def bought(args):
@@ -8,7 +9,7 @@ def bought(args):
         bought_data = list(csv.reader(csv_file))
 
         data = [int(bought_data[-1][0]) + 1, args.name, 1, args.price,
-                args.exp, datetime.date.today()]
+                args.exp, pd.read_csv("date.csv").columns[0]]
 
         with open("bought.csv", 'w', newline='') as csv_file:
             writer = csv.writer(csv_file)

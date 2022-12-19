@@ -1,5 +1,6 @@
 import csv
 import datetime
+import pandas as pd
 
 
 def rerender_bought(data):
@@ -13,7 +14,7 @@ def update_sold(args, sold_item):
     with open("sold.csv", 'r') as csv_readfile:
         sold_data = list(csv.reader(csv_readfile))
         data = [len(sold_data), sold_item[0],
-                args.sellprice, datetime.date.today()]
+                args.sellprice, pd.read_csv("date.csv").columns[0]]
         with open("sold.csv", 'w', newline='') as csv_file:
             writer = csv.writer(csv_file)
             for line in sold_data:

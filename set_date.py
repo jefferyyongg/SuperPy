@@ -15,10 +15,12 @@ def set_date(args):
         if isinstance(args, int):
             if args == 0:
                 write_date(str(datetime.datetime.now().date()))
+                print("Date reset to:", datetime.datetime.now().date())
             else:
                 date = str(datetime.datetime.strptime(
                     reader[0][0], "%Y-%m-%d").date() + datetime.timedelta(days=args))
                 write_date(date)
+                print("Date set to: ", date)
 
         elif args == "today":
             write_date(str(datetime.datetime.now().date()))
