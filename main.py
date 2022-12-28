@@ -12,23 +12,6 @@ from profit import prof
 from graph import graph
 from export import export
 
-# DONE 📝
-# PARSER FUNCTIONALITY ✔️
-# BUY FUNCTIONALITY ✔️
-# SELL FUNCTIONALITY ✔️
-# SET_DATE FUNCTIONALITY ✔️
-# INVENTORY FUNCTIONALITY ✔️
-# FINISH REVENUE & REPORT FUNCTIONALITY ✔️
-# ALL FUNCTIONS HAVE TO WORK WITH FILTERING WITH DATETIME BY MONTH ✔️
-# ADD ADDITIONAL FEATURES (MATPLOTLIB) ✔️ ONLY USED WITH REVENUE FUNCTION❗❗❗
-
-# DAVID VIMEO FEEDBACK TODOS 📝
-# TODAY/YESTERDAY NOT WORKING WITH PROFIT AND REV ✔️
-# DISPLAY DATECHANGE WHEN TIME ADVANCED ✔️
-# BUYING/SELLING ITEMS RESETS DATE.CSV TO TODAYS DATE ✔️
-# BUYING AND SELLING ITEMS ADD WRONG DATE TO BOUGHT/SOLD.CSV ✔️
-# ADD EXPORT ALL INVENTORY ITEMS THAT HAVE EXPIRED ✔️
-# ADD 1 MORE ADDITIONAL FEATURE (PRETTYTABLE) ✔️ ONLY USED WITH DEFAULT INVENTORY FUNCTION❗❗❗
 
 # Do not change these lines.
 __winc_id__ = "a2bc36ea784242e4989deb157d527ba0"
@@ -43,7 +26,7 @@ advancetime = parser.add_argument("-a", "--advancetime", type=int,
                                   help="advances time by x amount of days (enter 0 to reset date)")
 
 inventory = subparser.add_parser(
-    "inventory", help="-t/--today for today's date, -y/--yesterday for yesterday's date")
+    "inventory", help="for current inventory use inventory, -t/--today for today's date, -y/--yesterday for yesterday's date, -e/--expired to export all expired items to expired.csv file")
 inventory.add_argument("-e", "--expired", action="store_true", required=False)
 inventory.add_argument("-t", "--today", action="store_true", required=False)
 inventory.add_argument("-y", "--yesterday",
@@ -94,7 +77,6 @@ def main():
         sold(args)
 
     if args.parser == "inventory" and args.today:
-        set_date("today")
         inv()
     elif args.parser == "inventory" and args.yesterday:
         set_date("yesterday")
