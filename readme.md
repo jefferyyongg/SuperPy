@@ -119,7 +119,13 @@ python main.py revenue
 Use "-d" or "--date" to print the revenue for another date (yyyy-mm-dd) or (yyyy-mm) for monthly revenue.
 
 ```
-python main.py revenue -d  2022-12-28
+python main.py revenue -d  2022-12-15
+```
+
+To print a graph for monthly revenue use -s/--stats (yyyy-mm)
+
+```
+python main.py revenue -s  2022-12
 ```
 
 ### Profit

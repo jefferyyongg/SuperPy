@@ -1,5 +1,4 @@
 import csv
-import datetime
 import pandas as pd
 
 
@@ -23,6 +22,8 @@ def update_sold(args, sold_item):
 
 
 def sold(args):
+
+    df = pd.read_csv("date.csv")
     name_list = []
 
     with open("bought.csv", 'r') as csv_file:
@@ -33,6 +34,9 @@ def sold(args):
 
         if (any(args.name in x for x in bought_data)):
             for line in bought_data:
+                if line[1] == args.name and line[4] < df.columns[0]:
+                    print("This product has expired, please try again")
+                    return
 
                 if line[1] == args.name and line[2] != "1":
                     sold_item = bought_data[name_list.index(args.name)]
